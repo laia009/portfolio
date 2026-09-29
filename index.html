@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laia · Portfolio</title>
+<meta name="description" content="Portfolio profesional de Laia – 2n SMX / Professional portfolio">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg3d" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="#about"><span class="logo">L</span><span>Laia</span></a>
+  <nav id="menu" aria-label="Main">
+    <a href="#about" data-i18n="nav_about"></a>
+    <a href="#resume" data-i18n="nav_resume"></a>
+    <a href="#certs" data-i18n="nav_certs"></a>
+    <a href="#projects" data-i18n="nav_projects"></a>
+    <a href="#hhep" data-i18n="nav_hhep"></a>
+    <a href="#contact" data-i18n="nav_contact"></a>
+  </nav>
+  <div class="lang" role="group" aria-label="Language">
+    <button data-lang="es">ES</button><button data-lang="en">EN</button>
+  </div>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</header>
+
+<main>
+<!-- ============ ABOUT ME ============ -->
+<section class="page" id="about">
+  <div class="hero">
+    <div class="hero-text">
+      <p class="eyebrow" data-i18n="hero_eyebrow"></p>
+      <h1 data-i18n="hero_title"></h1>
+      <p class="lead" data-i18n="hero_lead"></p>
+      <div class="cta">
+        <a class="btn" href="#contact" data-i18n="hero_cta1"></a>
+        <a class="btn ghost" href="#resume" data-i18n="hero_cta2"></a>
+      </div>
+    </div>
+    <div class="hero-photo tilt">
+      <div class="ring"></div>
+      <img src="foto.jpg" alt="Laia">
+      <span class="chip c1">Networks</span><span class="chip c2">Hardware</span><span class="chip c3">Linux</span>
+    </div>
+  </div>
+
+  <h2 class="sec" data-i18n="who_h"></h2>
+  <div class="glass wide tilt"><p data-i18n="who_p1"></p><p data-i18n="who_p2"></p></div>
+
+  <h2 class="sec" data-i18n="skills_h"></h2>
+  <div class="grid2">
+    <div class="glass tilt">
+      <h3><span class="ico">⚙️</span><span data-i18n="hard_h"></span></h3>
+      <p class="muted" data-i18n="hard_sub"></p>
+      <div id="hardBars"></div>
+    </div>
+    <div class="glass tilt">
+      <h3><span class="ico">💬</span><span data-i18n="soft_h"></span></h3>
+      <p class="muted" data-i18n="soft_sub"></p>
+      <div class="tags" id="softTags"></div>
+    </div>
+  </div>
+  <div class="cubewrap" aria-hidden="true">
+    <div class="cube"><i>Windows</i><i>Linux</i><i>Redes</i><i>Hardware</i><i>Cloud</i><i>Security</i></div>
+  </div>
+
+  <h2 class="sec" data-i18n="para_h"></h2>
+  <p class="muted center" data-i18n="para_sub"></p>
+  <div class="paradigm glass" id="paradigm"></div>
+  <div class="paradigm-list" id="paradigmList"></div>
+</section>
+
+<!-- Secciones vacías por ahora -->
+<section class="page" id="resume"><h2 class="sec first" data-i18n="nav_resume"></h2><p class="muted center" data-i18n="soon"></p></section>
+<section class="page" id="certs"><h2 class="sec first" data-i18n="nav_certs"></h2><p class="muted center" data-i18n="soon"></p></section>
+<section class="page" id="projects"><h2 class="sec first" data-i18n="nav_projects"></h2><p class="muted center" data-i18n="soon"></p></section>
+<section class="page" id="hhep"><h2 class="sec first" data-i18n="nav_hhep"></h2><p class="muted center" data-i18n="soon"></p></section>
+<section class="page" id="contact"><h2 class="sec first" data-i18n="nav_contact"></h2><p class="muted center" data-i18n="soon"></p></section></main>
+
+<footer><span data-i18n="foot"></span> · 2026</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
