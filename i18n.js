@@ -3,6 +3,9 @@ const I18N = {
 es: {
   nav_about:"Sobre mí", nav_resume:"Currículum", nav_certs:"Certificados", nav_projects:"Proyectos", nav_hhep:"7HHEP", nav_contact:"Contacto",
   soon:"Próximamente…",
+  cv_sub:"Aquí puedes ver o descargar mis dos currículums.", cv_open:"Ver", cv_dl:"Descargar",
+  cv1_t:"Currículum (catalán)", cv1_d:"Mi currículum personal, con mi formación, idiomas y habilidades.",
+  cv2_t:"Currículum Europass (inglés)", cv2_d:"Formato europeo oficial, con detalle de los módulos de SMX y niveles de idioma.",
   hint:"Arrastra para explorar el mundo · pulsa en los iconos",
   intro_cta:"Conóceme", intro_explore:"Explorar el mundo",
   hero_eyebrow:"Portfolio profesional · 2º SMX",
@@ -36,6 +39,9 @@ es: {
 en: {
   nav_about:"About me", nav_resume:"Resume", nav_certs:"Certificates", nav_projects:"Projects", nav_hhep:"7HHEP", nav_contact:"Contact",
   soon:"Coming soon…",
+  cv_sub:"Here you can view or download my two résumés.", cv_open:"View", cv_dl:"Download",
+  cv1_t:"Résumé (Catalan)", cv1_d:"My personal résumé, with my education, languages and skills.",
+  cv2_t:"Europass CV (English)", cv2_d:"Official European format, detailing the SMX modules and language levels.",
   hint:"Drag to explore the world · click the icons",
   intro_cta:"Meet me", intro_explore:"Explore the world",
   hero_eyebrow:"Professional portfolio · 2nd year SMX",

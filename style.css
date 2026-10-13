@@ -132,6 +132,13 @@ mark.kw{background:linear-gradient(transparent 52%,rgba(255,95,162,.32) 52%);col
 .pi b{display:block;font:600 16px Fredoka;margin-bottom:2px}
 .pi.on,.pi:hover{border-color:#ff9ac4;transform:translateX(4px)}
 
+.cvs{display:grid;gap:18px;margin-top:18px}
+.cv{background:var(--soft);border-radius:22px;padding:16px}
+.cv h4{font:600 19px Fredoka;margin-top:12px}
+.cv .cta{margin-top:12px}
+.cv-prev{position:relative;display:block;height:300px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(20,30,70,.12)}
+.cv-prev object{width:100%;height:100%;pointer-events:none;border:0}
+.cv-tag{position:absolute;top:10px;right:10px;background:var(--resume);color:#fff;font:600 12px Fredoka;padding:3px 10px;border-radius:999px}
 .sheet.soon{text-align:center;padding:40px 20px 10px}
 .big-em{font-size:80px;display:inline-block;animation:bob 3s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-12px) rotate(-6deg)}}
