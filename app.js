@@ -1,132 +1,131 @@
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const kw = s => s.replace(/\*\*(.+?)\*\*/g, '<mark class="kw">$1</mark>');
-const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const SECS = ['about', 'resume', 'certs', 'projects', 'hhep', 'contact'];
+const ICONS = {
+  about: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  resume: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  certs: '<circle cx="12" cy="15" r="5"/><path d="M9 3 7.5 10.5M15 3l1.5 7.5M12 13v4"/>',
+  projects: '<path d="M12 2c3 2.5 4.5 6 4.5 10L14 15h-4l-2.5-3C7.5 8 9 4.5 12 2z"/><circle cx="12" cy="9" r="1.6"/><path d="M10 15l-1.5 5L12 18l3.5 2L14 15"/>',
+  hhep: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+  contact: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'
+};
 let lang = 'es';
 try { lang = localStorage.getItem('lang') || (navigator.language || 'es').slice(0, 2); } catch (e) {}
 if (!I18N[lang]) lang = 'es';
 
-/* ---------- render ---------- */
+/* ---------- iconos del mundo ---------- */
+const markers = {};
+SECS.forEach(id => {
+  const b = document.createElement('button');
+  b.className = 'marker hide'; b.dataset.sec = id;
+  b.innerHTML = `<span class="lbl"></span><span class="ic"><svg viewBox="0 0 24 24">${ICONS[id]}</svg></span><span class="stem"></span><span class="base"></span>`;
+  b.onclick = () => { location.hash = id; };
+  $('#markers').appendChild(b); markers[id] = b;
+});
+
+/* ---------- textos (ES / EN) ---------- */
 function render() {
   const L = I18N[lang];
   document.documentElement.lang = lang;
-  $$('[data-i18n]').forEach(el => el.innerHTML = kw(L[el.dataset.i18n] || ''));
+  $$('[data-i18n]').forEach(el => { el.innerHTML = kw(L[el.dataset.i18n] || ''); });
   $$('.lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  SECS.forEach(id => { markers[id].querySelector('.lbl').textContent = L['nav_' + id]; markers[id].setAttribute('aria-label', L['nav_' + id]); });
 
   $('#hardBars').innerHTML = L.hard.map(([n, v]) =>
-    `<div class="bar"><div class="h"><span>${esc(n)}</span><b>${v}%</b></div><div class="t"><i data-w="${v}"></i></div></div>`).join('');
+    `<div class="bar"><div class="bh"><span>${esc(n)}</span><b>${v}%</b></div><div class="t"><i data-w="${v}"></i></div></div>`).join('');
   $('#softTags').innerHTML = L.soft.map(s => `<span class="tag">${esc(s)}</span>`).join('');
   drawParadigm(L);
-  bindTilt();
-  animateBars();
+  if (current === 'about') animateBars();
 }
 
-/* ---------- paradigm map ---------- */
+/* ---------- mapa de imprescindibles ---------- */
+const COLS = ['#ff5fa2', '#a855f7', '#2f80ed', '#22c1c3', '#10b981', '#ffb347', '#ff5e62', '#6366f1', '#0ea5e9', '#f97316'];
 function drawParadigm(L) {
   const cx = 300, cy = 300, R = 215, n = L.paradigms.length;
-  let svg = `<svg viewBox="0 0 600 600"><defs><radialGradient id="cg"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></radialGradient></defs>`;
-  const pts = L.paradigms.map((p, i) => {
-    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-    return [cx + R * Math.cos(a), cy + R * Math.sin(a)];
-  });
-  pts.forEach(([x, y]) => svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`);
+  const pts = L.paradigms.map((p, i) => { const a = i / n * Math.PI * 2 - Math.PI / 2; return [cx + R * Math.cos(a), cy + R * Math.sin(a)]; });
+  let s = `<svg viewBox="-30 -20 660 670"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4f9a"/><stop offset="1" stop-color="#ff9a3c"/></linearGradient></defs>`;
+  pts.forEach(([x, y], i) => { const [nx, ny] = pts[(i + 1) % n]; s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/><line x1="${x}" y1="${y}" x2="${nx}" y2="${ny}" opacity=".6"/>`; });
+  s += `<g class="core"><circle cx="${cx}" cy="${cy}" r="70" fill="url(#cg)" stroke="#fff" stroke-width="6"/><text x="${cx}" y="${cy + 9}">${esc(L.core)}</text></g>`;
   pts.forEach(([x, y], i) => {
-    const nx = pts[(i + 1) % n];
-    svg += `<line x1="${x}" y1="${y}" x2="${nx[0]}" y2="${nx[1]}" opacity=".5"/>`;
+    s += `<g class="pn" data-i="${i}" tabindex="0"><circle cx="${x}" cy="${y}" r="38" fill="${COLS[i % COLS.length]}"/>` +
+      `<text x="${x}" y="${y + 9}" style="font-size:26px">${i + 1}</text>` +
+      `<text x="${x}" y="${y + 66}" style="fill:#1f1b3a;font-size:19px">${esc(L.paradigms[i][0])}</text></g>`;
   });
-  svg += `<g class="core"><circle cx="${cx}" cy="${cy}" r="62"/><text x="${cx}" y="${cy + 7}">${esc(L.core)}</text></g>`;
-  pts.forEach(([x, y], i) => svg += `<g class="pn" data-i="${i}"><circle cx="${x}" cy="${y}" r="30"/><text x="${x}" y="${y + 4}">${esc(L.paradigms[i][0])}</text></g>`);
-  $('#paradigm').innerHTML = svg + '</svg>';
-  $('#paradigmList').innerHTML = L.paradigms.map(([t, d], i) => `<div class="pi" data-i="${i}"><b>${i + 1}. ${esc(t)}</b>${esc(d)}</div>`).join('');
-  const sel = i => { $$('.pn,.pi').forEach(e => e.classList.toggle('on', e.dataset.i == i)); };
-  $$('.pn,.pi').forEach(e => { e.onmouseenter = e.onclick = () => sel(e.dataset.i); });
+  $('#paradigm').innerHTML = s + '</svg>';
+  $('#paradigmList').innerHTML = L.paradigms.map(([t, d], i) =>
+    `<div class="pi" data-i="${i}"><b style="color:${COLS[i % COLS.length]}">${i + 1}. ${esc(t)}</b>${esc(d)}</div>`).join('');
+  const sel = i => $$('.pn,.pi').forEach(e => e.classList.toggle('on', e.dataset.i == i));
+  $$('.pn,.pi').forEach(e => {
+    e.onmouseenter = e.onfocus = () => sel(e.dataset.i);
+    e.onclick = () => { sel(e.dataset.i); const li = $(`.pi[data-i="${e.dataset.i}"]`); if (e.classList.contains('pn')) li.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); };
+  });
 }
-
-/* ---------- skill bars ---------- */
 function animateBars() {
-  $$('.bar i').forEach(i => { i.style.width = '0'; });
-  requestAnimationFrame(() => setTimeout(() => $$('.bar i').forEach(i => i.style.width = i.dataset.w + '%'), 120));
+  $$('.bar i').forEach(i => { i.style.transition = 'none'; i.style.width = '0'; });
+  requestAnimationFrame(() => setTimeout(() => $$('.bar i').forEach(i => { i.style.transition = ''; i.style.width = i.dataset.w + '%'; }), 250));
 }
 
-/* ---------- 3D tilt on cards ---------- */
-function bindTilt() {
-  $$('.tilt').forEach(el => {
-    el.onmousemove = e => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      el.style.transform = `perspective(900px) rotateY(${x * 14}deg) rotateX(${-y * 14}deg) translateZ(8px)`;
-    };
-    el.onmouseleave = () => el.style.transform = '';
-  });
-}
-
-/* ---------- router ---------- */
-function route() {
-  const id = (location.hash || '#about').slice(1);
-  const page = $('#' + id) && $('#' + id).classList.contains('page') ? id : 'about';
-  $$('.page').forEach(p => p.classList.toggle('show', p.id === page));
-  $$('#menu a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + page));
+/* ---------- panel y navegación ---------- */
+let current = null, has3d = false;
+const panel = $('#panel'), scrim = $('#scrim');
+function openPanel(id) {
+  current = id;
+  $$('.sheet').forEach(s => s.classList.toggle('show', s.dataset.sec === id));
+  panel.classList.add('on'); panel.classList.toggle('short', id !== 'about');
+  panel.setAttribute('aria-hidden', 'false'); panel.scrollTop = 0;
+  scrim.classList.add('on');
+  $$('#menu a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
   $('#menu').classList.remove('open');
-  window.scrollTo({ top: 0 });
-  if (page === 'about') animateBars();
-  if (window.sceneKick) window.sceneKick();
+  hideIntro(); $('#hint').classList.add('gone');
+  if (has3d) World.focus(id, innerWidth > 900 ? 3.6 : 0);
+  if (id === 'about') animateBars();
+  setTimeout(() => $('#close').focus({ preventScroll: true }), 300);
 }
-window.addEventListener('hashchange', route);
-$$('.lang button').forEach(b => b.onclick = () => {
-  lang = b.dataset.lang; try { localStorage.setItem('lang', lang); } catch (e) {} render();
-});
-$('#burger').onclick = () => $('#menu').classList.toggle('open');
+function closePanel() {
+  current = null;
+  panel.classList.remove('on'); panel.setAttribute('aria-hidden', 'true'); scrim.classList.remove('on');
+  $$('#menu a').forEach(a => a.classList.remove('on'));
+  if (has3d) World.unfocus();
+}
+function goHome() { history.pushState('', document.title, location.pathname + location.search); route(); }
+function route() {
+  const id = location.hash.slice(1);
+  if (SECS.includes(id)) openPanel(id); else closePanel();
+}
+addEventListener('hashchange', route);
+$('#close').onclick = goHome; scrim.onclick = goHome;
+addEventListener('keydown', e => { if (e.key === 'Escape' && current) goHome(); });
+$('.logo').onclick = e => { e.preventDefault(); goHome(); };
+$('#burger').onclick = () => { const m = $('#menu'); m.classList.toggle('open'); $('#burger').setAttribute('aria-expanded', m.classList.contains('open')); };
+$$('.lang button').forEach(b => b.onclick = () => { lang = b.dataset.lang; try { localStorage.setItem('lang', lang); } catch (e) {} render(); });
 
-/* ---------- Three.js background ---------- */
-(function scene() {
-  if (typeof THREE === 'undefined') return;
-  const canvas = $('#bg3d');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  const sc = new THREE.Scene();
-  const cam = new THREE.PerspectiveCamera(60, 1, .1, 100);
-  cam.position.z = 8;
+/* ---------- intro y pistas ---------- */
+let introShown = false;
+function hideIntro() { $('#intro').classList.add('gone'); }
+function showIntro() {
+  if (introShown || current) return; introShown = true;
+  $('#intro').classList.remove('gone');
+}
+$('#explore').onclick = () => { hideIntro(); $('#hint').classList.remove('gone'); };
+$('#intro').classList.add('gone'); $('#hint').classList.add('gone');
 
-  // particles
-  const N = 1400, pos = new Float32Array(N * 3);
-  for (let i = 0; i < N * 3; i++) pos[i] = (Math.random() - .5) * 40;
-  const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const stars = new THREE.Points(pg, new THREE.PointsMaterial({ size: .05, color: 0x9fb4ff, transparent: true, opacity: .8 }));
-  sc.add(stars);
-
-  // hero objects
-  const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(1.6, .45, 160, 20),
-    new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: .35 }));
-  knot.position.set(4.2, 0, -3); sc.add(knot);
-  const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1, 1),
-    new THREE.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true, transparent: true, opacity: .45 }));
-  ico.position.set(-5, -2, -4); sc.add(ico);
-  const torus = new THREE.Mesh(new THREE.TorusGeometry(.9, .25, 12, 40),
-    new THREE.MeshBasicMaterial({ color: 0xf472b6, wireframe: true, transparent: true, opacity: .4 }));
-  torus.position.set(-3, 3, -5); sc.add(torus);
-
-  let mx = 0, my = 0, boost = 0;
-  addEventListener('mousemove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; });
-  window.sceneKick = () => boost = 1;
-  function size() { renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); }
-  addEventListener('resize', size); size();
-
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  (function loop() {
-    const t = performance.now() / 1000;
-    boost *= .95;
-    const s = still ? 0 : 1;
-    knot.rotation.x = t * .25 * s + boost * 2; knot.rotation.y = t * .3 * s;
-    ico.rotation.x = t * .2 * s; ico.rotation.y = -t * .35 * s - boost * 2;
-    torus.rotation.x = t * .4 * s; torus.rotation.z = t * .2 * s;
-    stars.rotation.y = t * .015 * s + scrollY * .0002;
-    cam.position.x += (mx * 1.6 - cam.position.x) * .04;
-    cam.position.y += (-my * 1.2 - cam.position.y) * .04;
-    cam.lookAt(0, 0, 0);
-    renderer.render(sc, cam);
-    requestAnimationFrame(loop);
-  })();
-})();
-
+/* ---------- arranque ---------- */
 render();
-route();
+try {
+  if (!window.THREE) throw new Error('Three.js no cargó');
+  World.init({
+    canvas: $('#world'), markers,
+    onSelect: id => { location.hash = id; },
+    onInteract: () => { hideIntro(); $('#hint').classList.add('gone'); introShown = true; },
+    onProgress: p => { $('#loadbar').style.width = Math.round(p * 90) + '%'; }
+  });
+  has3d = true;
+} catch (e) { console.error(e); document.body.classList.add('no3d'); }
+setTimeout(() => { $('#loadbar').style.width = '100%'; }, 100);
+setTimeout(() => {
+  $('#loader').classList.add('gone');
+  if (has3d) World.start();
+  if (location.hash) route(); else setTimeout(showIntro, has3d ? 2900 : 0);
+}, 750);
