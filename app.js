@@ -46,7 +46,7 @@ function render() {
 }
 
 /* Enlace a la carpeta de Google Drive con todos los certificados (pega aquí el enlace) */
-const DRIVE_URL = '';
+const DRIVE_URL = 'https://drive.google.com/drive/folders/1V1L3eHxN7ghymBj-H7Aqstnak63oFwho?usp=drive_link';
 if (DRIVE_URL) { $('#driveLink').href = DRIVE_URL; $('#driveLink').hidden = false; }
 const closeLb = () => { $('#lightbox').hidden = true; };
 $('#lbClose').onclick = closeLb; $('#lightbox').onclick = e => { if (e.target.id === 'lightbox') closeLb(); };
