@@ -37,8 +37,19 @@ function render() {
     `<div class="bar"><div class="bh"><span>${esc(n)}</span><b>${v}%</b></div><div class="t"><i data-w="${v}"></i></div></div>`).join('');
   $('#softTags').innerHTML = L.soft.map(s => `<span class="tag">${esc(s)}</span>`).join('');
   drawParadigm(L);
+  $('#certGrid').innerHTML = L.certs.map(([t, d], i) => {
+    const src = `certs/c${String(i + 1).padStart(2, '0')}.jpg`;
+    return `<button class="cert" data-src="${src}" data-cap="${esc(t)}"><img src="${src}" alt="${esc(t)}" loading="lazy"><b>${esc(t)}</b><small>${esc(d)}</small></button>`;
+  }).join('');
+  $$('.cert').forEach(b => b.onclick = () => { $('#lbImg').src = b.dataset.src; $('#lbImg').alt = $('#lbCap').textContent = b.dataset.cap; $('#lightbox').hidden = false; });
   if (current === 'about') animateBars();
 }
+
+/* Enlace a la carpeta de Google Drive con todos los certificados (pega aquí el enlace) */
+const DRIVE_URL = '';
+if (DRIVE_URL) { $('#driveLink').href = DRIVE_URL; $('#driveLink').hidden = false; }
+const closeLb = () => { $('#lightbox').hidden = true; };
+$('#lbClose').onclick = closeLb; $('#lightbox').onclick = e => { if (e.target.id === 'lightbox') closeLb(); };
 
 /* ---------- mapa de imprescindibles ---------- */
 const COLS = ['#ff5fa2', '#a855f7', '#2f80ed', '#22c1c3', '#10b981', '#ffb347', '#ff5e62', '#6366f1', '#0ea5e9', '#f97316'];
@@ -73,7 +84,7 @@ const panel = $('#panel'), scrim = $('#scrim');
 function openPanel(id) {
   current = id;
   $$('.sheet').forEach(s => s.classList.toggle('show', s.dataset.sec === id));
-  panel.classList.add('on'); panel.classList.toggle('short', id !== 'about' && id !== 'resume');
+  panel.classList.add('on'); panel.classList.toggle('short', !['about','resume','certs'].includes(id));
   panel.setAttribute('aria-hidden', 'false'); panel.scrollTop = 0;
   scrim.classList.add('on');
   $$('#menu a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
@@ -96,7 +107,7 @@ function route() {
 }
 addEventListener('hashchange', route);
 $('#close').onclick = goHome; scrim.onclick = goHome;
-addEventListener('keydown', e => { if (e.key === 'Escape' && current) goHome(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { if (!$('#lightbox').hidden) closeLb(); else if (current) goHome(); } });
 $('.logo').onclick = e => { e.preventDefault(); goHome(); };
 $('#burger').onclick = () => { const m = $('#menu'); m.classList.toggle('open'); $('#burger').setAttribute('aria-expanded', m.classList.contains('open')); };
 $$('.lang button').forEach(b => b.onclick = () => { lang = b.dataset.lang; try { localStorage.setItem('lang', lang); } catch (e) {} render(); });

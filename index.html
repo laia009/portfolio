@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -106,18 +106,26 @@
       </div>
     </div>
   </section>
-  <section class="sheet soon" data-sec="certs"><div class="big-em">🏅</div><h2 data-i18n="nav_certs"></h2><p class="muted" data-i18n="soon"></p></section>
+  <section class="sheet" data-sec="certs">
+    <p class="eyebrow" data-i18n="hero_eyebrow"></p>
+    <h2 data-i18n="nav_certs"></h2>
+    <p class="muted" data-i18n="cert_sub"></p>
+    <a class="btn drive" id="driveLink" href="#" target="_blank" rel="noopener" hidden><span>📁</span><span data-i18n="cert_drive"></span></a>
+    <div class="certs" id="certGrid"></div>
+  </section>
   <section class="sheet soon" data-sec="projects"><div class="big-em">🚀</div><h2 data-i18n="nav_projects"></h2><p class="muted" data-i18n="soon"></p></section>
   <section class="sheet soon" data-sec="hhep"><div class="big-em">💡</div><h2 data-i18n="nav_hhep"></h2><p class="muted" data-i18n="soon"></p></section>
   <section class="sheet soon" data-sec="contact"><div class="big-em">✉️</div><h2 data-i18n="nav_contact"></h2><p class="muted" data-i18n="soon"></p></section>
 </aside>
 
+<div class="lightbox" id="lightbox" hidden><button class="close" id="lbClose" aria-label="Cerrar / Close">✕</button><img id="lbImg" alt=""><p id="lbCap"></p></div>
+
 <footer class="foot"><span data-i18n="foot"></span> · 2026</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="i18n.js?v=4"></script>
-<script src="props.js?v=4"></script>
-<script src="world.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="i18n.js?v=5"></script>
+<script src="props.js?v=5"></script>
+<script src="world.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
