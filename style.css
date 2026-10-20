@@ -139,6 +139,24 @@ mark.kw{background:linear-gradient(transparent 52%,rgba(255,95,162,.32) 52%);col
 .cv-prev{position:relative;display:block;height:300px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(20,30,70,.12)}
 .cv-prev object{width:100%;height:100%;pointer-events:none;border:0}
 .cv-tag{position:absolute;top:10px;right:10px;background:var(--resume);color:#fff;font:600 12px Fredoka;padding:3px 10px;border-radius:999px}
+.projs{display:grid;gap:16px;margin-top:18px}
+.proj{position:relative;border-radius:24px;padding:20px 22px;background:var(--soft);overflow:hidden;transition:transform .25s}
+.proj:hover{transform:translateY(-4px)}
+.proj::before{content:"";position:absolute;inset:0 0 auto 0;height:6px}
+.p0::before{background:var(--about)}.p1::before{background:var(--projects)}.p2::before{background:var(--certs)}
+.ph{display:flex;justify-content:space-between;align-items:center}
+.pic{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;font-size:30px;background:#fff;box-shadow:0 6px 16px rgba(20,30,70,.1)}
+.p1 .pic{animation:bob 3s ease-in-out infinite}
+.pst{font:600 12px Fredoka;padding:5px 12px;border-radius:999px;color:#fff}
+.pst.done{background:#10b981}.pst.future{background:var(--hhep)}
+.proj h4{font:700 20px Fredoka;margin:12px 0 6px}
+.proj p{font-size:14.5px;color:#47456a}
+.proj .tags{margin-top:12px}.proj .tag{font-size:13px;padding:5px 12px}
+.proj .btn{margin-top:14px}
+.steps{list-style:none;display:flex;margin-top:16px;counter-reset:s}
+.steps li{flex:1;min-width:0;position:relative;text-align:center;font-size:11.5px;line-height:1.25;font-weight:700;color:var(--mut);padding:30px 3px 0;overflow-wrap:anywhere;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #c7bff5;display:grid;place-items:center;font:600 12px Fredoka;color:#6366f1;z-index:1}
+.steps li+li::after{content:"";position:absolute;top:12px;right:50%;width:100%;height:2px;background:#ddd6fe}
 .drive{margin:14px 0 4px;gap:8px}
 .drive[hidden]{display:none}
 .certs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:16px}

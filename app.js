@@ -37,6 +37,13 @@ function render() {
     `<div class="bar"><div class="bh"><span>${esc(n)}</span><b>${v}%</b></div><div class="t"><i data-w="${v}"></i></div></div>`).join('');
   $('#softTags').innerHTML = L.soft.map(s => `<span class="tag">${esc(s)}</span>`).join('');
   drawParadigm(L);
+  $('#projGrid').innerHTML = L.projs.map((p, i) => `<article class="proj p${i}">
+    <div class="ph"><span class="pic">${p.ic}</span><span class="pst ${p.st}">${esc(p.tag)}</span></div>
+    <h4>${esc(p.t)}</h4><p>${kw(esc(p.d))}</p>
+    <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+    ${p.steps ? `<ol class="steps">${p.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
+    ${p.url ? `<a class="btn" href="${p.url}" target="_blank" rel="noopener">${esc(p.link)} ↗</a>` : ''}
+  </article>`).join('');
   $('#certGrid').innerHTML = L.certs.map(([t, d], i) => {
     const src = `certs/c${String(i + 1).padStart(2, '0')}.jpg`;
     return `<button class="cert" data-src="${src}" data-cap="${esc(t)}"><img src="${src}" alt="${esc(t)}" loading="lazy"><b>${esc(t)}</b><small>${esc(d)}</small></button>`;
@@ -84,7 +91,7 @@ const panel = $('#panel'), scrim = $('#scrim');
 function openPanel(id) {
   current = id;
   $$('.sheet').forEach(s => s.classList.toggle('show', s.dataset.sec === id));
-  panel.classList.add('on'); panel.classList.toggle('short', !['about','resume','certs'].includes(id));
+  panel.classList.add('on'); panel.classList.toggle('short', !['about','resume','certs','projects'].includes(id));
   panel.setAttribute('aria-hidden', 'false'); panel.scrollTop = 0;
   scrim.classList.add('on');
   $$('#menu a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));

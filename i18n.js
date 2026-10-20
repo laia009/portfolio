@@ -4,6 +4,12 @@ es: {
   nav_about:"Sobre mí", nav_resume:"Currículum", nav_certs:"Certificados", nav_projects:"Proyectos", nav_hhep:"7HHEP", nav_contact:"Contacto",
   soon:"Próximamente…",
   cv_sub:"Aquí puedes ver o descargar mis dos currículums.", cv_open:"Ver", cv_dl:"Descargar",
+  proj_sub:"Lo que he hecho y lo que viene: proyectos de clase, programación y mi proyecto de final de curso.",
+  projs:[
+    {ic:"🎨", st:"done", tag:"Hecho", t:"Mi proyecto en Canva", d:"Proyecto diseñado con **Canva** durante el curso: contenido visual, organizado y pensado para comunicar de forma clara.", tags:["Canva","Diseño","Presentación"], url:"https://canva.link/ky85yhbq7bb6gy8", link:"Ver en Canva"},
+    {ic:"🎮", st:"future", tag:"Próximamente", t:"Crear mi propio videojuego", d:"Proyecto de **programación** en el que crearé un juego desde cero: diseño de niveles, personajes, **lógica del juego** y puntuación.", tags:["Programación","Lógica","Diseño de juegos"], steps:["Idea y diseño","Programación","Pruebas","Publicación"]},
+    {ic:"🎓", st:"future", tag:"Final de curso", t:"Proyecto final de SMX", d:"Proyecto de **final de curso** donde aplicaré todo lo aprendido: **montaje de equipos**, **sistemas operativos**, **redes** y **seguridad**.", tags:["Hardware","Redes","Sistemas","Seguridad"], steps:["Planificación","Montaje","Configuración","Presentación"]}
+  ],
   cert_sub:"Certificados de los cursos que he hecho en el Institut Sa Palomera (Blanes, junio de 2026). Pulsa en uno para verlo en grande.",
   cert_drive:"Ver todos los certificados en Google Drive",
   certs:[["Introducción a las redes (CCNA Routing and Switching)","Cisco Networking Academy · 66 h"],["Introducción a la reparación de móviles","Ins Sa Palomera · 20 h"],["Administración básica de sistemas Linux","Ins Sa Palomera · 30 h"],["Administración básica de sistemas en Windows 10","Microsoft Imagine Academy · 30 h"],["Gestión de correo y agenda con Outlook 2019","Microsoft Imagine Academy · 15 h"],["Elaboración avanzada de documentos con Word 2019","Microsoft Imagine Academy · 30 h"],["Aplicaciones con bases de datos en Access 2019","Microsoft Imagine Academy · 35 h"],["Presentaciones con PowerPoint 2019","Microsoft Imagine Academy · 15 h"],["Hojas de cálculo avanzadas con Excel 2019","Microsoft Imagine Academy · 30 h"],["Inteligencia artificial y Excel avanzado","Microsoft Imagine Academy · 20 h"],["Sustainability applied to the production system","Certificate of participation · 33 h (inglés)"]],
@@ -43,6 +49,12 @@ en: {
   nav_about:"About me", nav_resume:"Resume", nav_certs:"Certificates", nav_projects:"Projects", nav_hhep:"7HHEP", nav_contact:"Contact",
   soon:"Coming soon…",
   cv_sub:"Here you can view or download my two résumés.", cv_open:"View", cv_dl:"Download",
+  proj_sub:"What I've done and what's coming: class projects, programming and my end-of-year project.",
+  projs:[
+    {ic:"🎨", st:"done", tag:"Done", t:"My Canva project", d:"A project designed with **Canva** during the course: visual, well organised and made to communicate clearly.", tags:["Canva","Design","Presentation"], url:"https://canva.link/ky85yhbq7bb6gy8", link:"View on Canva"},
+    {ic:"🎮", st:"future", tag:"Coming soon", t:"Creating my own video game", d:"A **programming** project where I'll build a game from scratch: level design, characters, **game logic** and scoring.", tags:["Programming","Logic","Game design"], steps:["Idea & design","Coding","Testing","Release"]},
+    {ic:"🎓", st:"future", tag:"End of year", t:"SMX final project", d:"My **end-of-year** project where I'll apply everything I've learned: **computer assembly**, **operating systems**, **networks** and **security**.", tags:["Hardware","Networks","Systems","Security"], steps:["Planning","Assembly","Configuration","Presentation"]}
+  ],
   cert_sub:"Certificates from the courses I took at Institut Sa Palomera (Blanes, June 2026). Click one to see it full size.",
   cert_drive:"See all certificates on Google Drive",
   certs:[["Introduction to Networks (CCNA Routing and Switching)","Cisco Networking Academy · 66 h"],["Introduction to mobile phone repair","Ins Sa Palomera · 20 h"],["Basic Linux system administration","Ins Sa Palomera · 30 h"],["Basic Windows 10 system administration","Microsoft Imagine Academy · 30 h"],["Email and calendar with Outlook 2019","Microsoft Imagine Academy · 15 h"],["Advanced documents with Word 2019","Microsoft Imagine Academy · 30 h"],["Database applications with Access 2019","Microsoft Imagine Academy · 35 h"],["Presentations with PowerPoint 2019","Microsoft Imagine Academy · 15 h"],["Advanced spreadsheets with Excel 2019","Microsoft Imagine Academy · 30 h"],["Artificial intelligence tools and advanced Excel","Microsoft Imagine Academy · 20 h"],["Sustainability applied to the production system","Certificate of participation · 33 h (in English)"]],
