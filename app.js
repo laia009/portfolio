@@ -91,7 +91,7 @@ const panel = $('#panel'), scrim = $('#scrim');
 function openPanel(id) {
   current = id;
   $$('.sheet').forEach(s => s.classList.toggle('show', s.dataset.sec === id));
-  panel.classList.add('on'); panel.classList.toggle('short', !['about','resume','certs','projects'].includes(id));
+  panel.classList.add('on'); panel.classList.toggle('short', !['about','resume','certs','projects','hhep'].includes(id));
   panel.setAttribute('aria-hidden', 'false'); panel.scrollTop = 0;
   scrim.classList.add('on');
   $$('#menu a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
