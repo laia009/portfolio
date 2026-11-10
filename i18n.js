@@ -67,7 +67,7 @@ en: {
   hhep_sub:"How I apply the first three habits in my life.",
   h1_tag:"Habit 1 · Be proactive", h1_t:"An example of proactivity in my life",
   h1_a_t:"Before", h1_a:"In the mornings I didn't do anything productive.",
-  h1_b_t:"What I did", h1_b:"I decided to start doing **work placements**.",
+  h1_b_t:"What I did", h1_b:"I decided to start doing **an internship**.",
   h1_c_t:"Result", h1_c:"I've gained **experience**, **improved my grades** and learned to be **more sociable**.",
   h2_tag:"Habit 2 · Begin with the end in mind", h2_t:"My mission statement",
   mission:"In my professional future I want to work in the world of **artificial intelligence**. I want to live by my most important values: **responsibility**, **honesty** and **respect**, and be **kind** and **pleasant** to the people around me.",
