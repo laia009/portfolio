@@ -1,8 +1,8 @@
 /* Mundo 3D estilo madbox: planeta-océano con una isla por sección */
 const World = (() => {
   const T = THREE, PI = Math.PI, D2R = PI / 180, R = 75, LAT0 = 20;
-  const clock = new T.Clock(), tick = [], isles = {}, markers = {};
-  const st = { rot: 0, vel: 0, tilt: 0, target: null, zoom: 0, zoomTo: 0, focus: null, side: 0, intro: 1, started: false, drag: false };
+  const clock = new T.Clock(), tick = [], isles = {}, markers = {}, obstacles = [];
+  const st = { rot: 0, vel: 0, tilt: 0, tiltTo: 0, target: null, zoom: 0, zoomTo: 0, focus: null, side: 0, intro: 1, started: false, drag: false, driving: false };
   const base = { pos: new T.Vector3(), look: new T.Vector3() };
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let renderer, scene, camera, planet, stage, canvas, W = 1, H = 1, cb = {}, hoverId = null, photoMesh = null;
@@ -151,7 +151,7 @@ const World = (() => {
     sea.receiveShadow = true; planet.add(sea);
     progress(.25);
 
-    const all = [];
+    const all = obstacles;
     SECTIONS.forEach(s => {
       const g = P.island({ r: s.r, seed: s.seed, top: s.top });
       g.userData.sec = s.id;
@@ -160,7 +160,7 @@ const World = (() => {
       const foam = P.foam(g.userData.pts, R); g.add(foam);
       const p = geo(s), n = normalAt(p.lat, p.lon); orient(g, n); planet.add(g);
       isles[s.id] = { group: g, anchor, foam, lon: p.lon, lat: p.lat };
-      all.push({ n, r: s.r });
+      all.push({ n, r: s.r, id: s.id });
     });
     progress(.55);
     DECOR.forEach(d => {
@@ -221,11 +221,84 @@ const World = (() => {
       });
     });
 
+    buildJet();
+
     // Foto real en el marco (solo funciona servido por http/https)
     if (/^https?:/.test(location.protocol)) {
       new T.TextureLoader().load('foto.jpg', tex => { photoMesh.material = new T.MeshBasicMaterial({ map: tex, toneMapped: false }); });
     }
     progress(1);
+  }
+
+  /* ---------- moto de agua controlable con el teclado ---------- */
+  const jet = { obj: null, p: new T.Vector3(), h: new T.Vector3(), speed: 0, steer: 0, near: null, wake: [], wi: 0, wt: 0 };
+  const keys = new Set();
+  const KEYMAP = { ArrowUp: 'f', KeyW: 'f', ArrowDown: 'b', KeyS: 'b', ArrowLeft: 'l', KeyA: 'l', ArrowRight: 'r', KeyD: 'r' };
+  const MAX = 9;
+  function buildJet() {
+    const o = P.jetski(); o.scale.setScalar(1.7); planet.add(o); jet.obj = o;
+    const s = geo({ x: -4.5, y: -5.5 }); jet.p.copy(normalAt(s.lat, s.lon));
+    jet.h.set(0, 1, 0).addScaledVector(jet.p, -jet.p.y).normalize();
+    const wg = new T.RingGeometry(.18, .3, 20); wg.rotateX(-PI / 2);
+    for (let i = 0; i < 26; i++) {
+      const m = new T.Mesh(wg, new T.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0, depthWrite: false }));
+      planet.add(m); jet.wake.push({ m, life: 0 });
+    }
+  }
+  const qa = new T.Quaternion(), ax = new T.Vector3(), np = new T.Vector3(), nh = new T.Vector3();
+  function blockedAt(p) {
+    const lat = Math.asin(clamp(p.y, -1, 1)) / D2R;
+    if (lat < -4 || lat > 58) return true;
+    return obstacles.some(o => p.angleTo(o.n) * R < o.r * 1.12 + .55);
+  }
+  function driveJet(t, dt) {
+    const o = jet.obj; if (!o) return;
+    if (cb.canDrive && !cb.canDrive()) keys.clear();
+    const f = keys.has('f') ? 1 : 0, b = keys.has('b') ? 1 : 0, turn = (keys.has('l') ? 1 : 0) - (keys.has('r') ? 1 : 0);
+    jet.speed = clamp(jet.speed + (f * 14 - b * 10) * dt, -MAX * .45, MAX);
+    if (!f && !b) jet.speed *= Math.pow(.3, dt);                       // frena sola al soltar
+    jet.steer += (turn - jet.steer) * Math.min(1, dt * 8);
+    if (Math.abs(jet.steer) > .01) {                                     // girar
+      const tr = jet.steer * 2.3 * dt * (jet.speed < -.05 ? -1 : 1) * Math.min(1, .45 + Math.abs(jet.speed) / MAX);
+      qa.setFromAxisAngle(jet.p, tr); jet.h.applyQuaternion(qa);
+    }
+    ax.crossVectors(jet.p, jet.h).normalize();
+    if (Math.abs(jet.speed) > .01) {                                     // avanzar sobre la esfera
+      qa.setFromAxisAngle(ax, jet.speed * dt / R);
+      np.copy(jet.p).applyQuaternion(qa); nh.copy(jet.h).applyQuaternion(qa);
+      if (blockedAt(np)) jet.speed *= -.35;                              // choca con la isla y rebota
+      else { jet.p.copy(np).normalize(); jet.h.copy(nh); }
+      jet.h.addScaledVector(jet.p, -jet.h.dot(jet.p)).normalize();
+    }
+    const sp = Math.abs(jet.speed) / MAX;
+    orient(o, jet.p, .05 + Math.sin(t * 3) * .04, jet.h);
+    o.rotateZ(-jet.steer * .28 * Math.min(1, sp * 2));                  // se inclina en las curvas
+    o.rotateX(-.1 * sp + Math.sin(t * 6) * .02 * sp);                    // morro arriba al acelerar
+    const u = o.userData;
+    u.sparks.forEach(s => {
+      const d = s.userData, k = t * 1.6 + d.ph, tw = (Math.sin(k * 2.3) + 1) / 2;
+      s.position.set(Math.cos(d.a + t * .8) * d.r * .6, d.y + Math.sin(k) * .08, Math.sin(d.a + t * .8) * d.r);
+      s.scale.setScalar(.4 + tw); s.material.opacity = .25 + .75 * tw; s.rotation.y = k;
+    });
+    u.pony.rotation.x = -.2 - .7 * sp + Math.sin(t * 10) * .12 * sp;
+    jet.wt -= dt;                                                        // estela de espuma
+    if (Math.abs(jet.speed) > 1.2 && jet.wt <= 0) {
+      jet.wt = .06; const w = jet.wake[jet.wi++ % jet.wake.length]; w.life = 1;
+      np.copy(jet.p).applyAxisAngle(ax, -1.1 / R * Math.sign(jet.speed)).normalize();
+      orient(w.m, np, .04, jet.h);
+    }
+    jet.wake.forEach(w => {
+      if (w.life <= 0) return;
+      w.life -= dt * .9; w.m.material.opacity = Math.max(0, w.life) * .8;
+      const s = 1 + (1 - w.life) * 2.2; w.m.scale.set(s, 1, s);
+    });
+    let near = null, best = 1e9;                                         // ¿hay una isla de sección cerca?
+    obstacles.forEach(ob => { if (!ob.id) return; const d = jet.p.angleTo(ob.n) * R - ob.r * 1.12; if (d < 2.6 && d < best) { best = d; near = ob.id; } });
+    if (near !== jet.near) { jet.near = near; cb.onNear && cb.onNear(near); }
+    if (st.driving) {                                                    // la cámara sigue a la moto
+      st.target = -Math.atan2(jet.p.x, jet.p.z);
+      st.tiltTo = clamp((Math.asin(jet.p.y) / D2R - LAT0 + 3) * D2R * .85, -.3, .5);
+    }
   }
 
   /* ---------- cámara ---------- */
@@ -287,7 +360,7 @@ const World = (() => {
   function bindInput() {
     let px = 0, py = 0, moved = 0;
     canvas.addEventListener('pointerdown', e => {
-      st.drag = true; moved = 0; px = e.clientX; py = e.clientY; st.target = null;
+      st.drag = true; moved = 0; px = e.clientX; py = e.clientY; st.target = null; st.driving = false;
       canvas.setPointerCapture(e.pointerId); canvas.classList.add('drag'); cb.onInteract && cb.onInteract();
     });
     canvas.addEventListener('pointermove', e => {
@@ -305,7 +378,15 @@ const World = (() => {
     canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
     canvas.addEventListener('pointerleave', () => { hoverId = null; });
     canvas.addEventListener('wheel', e => { st.target = null; st.vel += clamp(e.deltaY + e.deltaX, -120, 120) * -.00035; cb.onInteract && cb.onInteract(); }, { passive: true });
-    addEventListener('keydown', e => { if (e.target.closest && e.target.closest('input,textarea')) return; if (e.key === 'ArrowLeft') st.vel -= .02; if (e.key === 'ArrowRight') st.vel += .02; });
+    addEventListener('keydown', e => {
+      if (e.target.closest && e.target.closest('input,textarea')) return;
+      if (cb.canDrive && !cb.canDrive()) return;
+      const k = KEYMAP[e.code];
+      if (k) { e.preventDefault(); keys.add(k); st.driving = true; cb.onInteract && cb.onInteract(); }
+      else if (e.code === 'Enter' && jet.near) { e.preventDefault(); keys.clear(); cb.onSelect && cb.onSelect(jet.near); }
+    });
+    addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) keys.delete(k); });
+    addEventListener('blur', () => keys.clear());
   }
 
   /* ---------- bucle principal ---------- */
@@ -315,10 +396,11 @@ const World = (() => {
   }
   function loop() {
     const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+    driveJet(t, dt);
     if (!st.drag) {
       if (st.target !== null) { st.rot += wrap(st.target - st.rot) * Math.min(1, dt * 3.5); st.vel = 0; }
       else { st.rot += st.vel; st.vel *= Math.pow(.93, dt * 60); }
-      st.tilt += -st.tilt * Math.min(1, dt * 2.5);
+      st.tilt += ((st.driving ? st.tiltTo : 0) - st.tilt) * Math.min(1, dt * 2.5);
     }
     planet.rotation.set(st.tilt, st.rot, 0);
     st.zoom += (st.zoomTo - st.zoom) * Math.min(1, dt * 2.6);
@@ -347,7 +429,7 @@ const World = (() => {
       updateCamera(); renderer.render(scene, camera); requestAnimationFrame(loop);
     },
     start() { st.started = true; },
-    focus(id, side = 0) { if (!isles[id]) return; st.focus = id; st.side = side; st.target = -isles[id].lon * D2R; st.zoomTo = 1; st.intro = 0; },
+    focus(id, side = 0) { if (!isles[id]) return; st.driving = false; keys.clear(); st.focus = id; st.side = side; st.target = -isles[id].lon * D2R; st.zoomTo = 1; st.intro = 0; },
     unfocus() { st.zoomTo = 0; st.target = null; },
     spin(d) { st.target = null; st.vel += d; }
   };

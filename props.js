@@ -228,5 +228,53 @@ const P = (() => {
     return g;
   }
 
-  return { RNG, canvasTex, island, foam, spot, pine, roundTree, palm, bush, rock, flowers, desk, frame, school, trophy, rocket, ziggurat, lighthouse, balloon, cloud, boat, penguin, router, mat, box, cyl, sph };
+  // Chica en moto de agua rosa con brillo (mira hacia +Z)
+  function jetski() {
+    const g = new T.Group();
+    const gloss = { metalness: .35, roughness: .16, emissive: '#ff3d9a', emissiveIntensity: .22 };
+    const hull = mk(new T.SphereGeometry(.5, 28, 18), '#ff5fb0', gloss); hull.scale.set(.78, .4, 1.65); hull.position.y = .12;
+    const rim = mk(new T.TorusGeometry(.5, .05, 8, 32), '#ffffff', { roughness: .3 }); rim.rotation.x = PI / 2; rim.scale.set(.8, 1.66, 1); rim.position.y = .1;
+    const deck = mk(new T.SphereGeometry(.5, 24, 12, 0, PI * 2, 0, PI / 2), '#ff8fcb', gloss); deck.scale.set(.6, .3, 1.3); deck.position.set(0, .2, -.05);
+    const seat = box(.4, .14, .72, '#6d28d9'); seat.position.set(0, .4, -.28);
+    const dash = box(.38, .22, .3, '#ff5fb0', gloss); dash.position.set(0, .4, .38); dash.rotation.x = -.35;
+    const bar = cyl(.03, .03, .78, '#3a3550', 8); bar.rotation.z = PI / 2; bar.position.set(0, .6, .32);
+    const screen = box(.26, .14, .03, '#9ee7ff', { emissive: '#7fdcff', emissiveIntensity: .6 }); screen.position.set(0, .58, .5); screen.rotation.x = -.5;
+    g.add(hull, rim, deck, seat, dash, bar, screen);
+
+    // Chica
+    const skin = '#ffd3b5', top = '#c084fc', jeans = '#4c6ef5', hairC = '#3b2416';
+    const girl = new T.Group();
+    [-.11, .11].forEach(x => {
+      const thigh = cyl(.075, .07, .42, jeans, 10); thigh.rotation.x = PI / 2 - .25; thigh.position.set(x, .53, -.06); girl.add(thigh);
+      const shin = cyl(.065, .055, .36, jeans, 10); shin.position.set(x * 1.25, .36, .14); shin.rotation.x = .2; girl.add(shin);
+      const shoe = box(.12, .07, .18, '#ffffff'); shoe.position.set(x * 1.25, .2, .2); girl.add(shoe);
+    });
+    const torso = cyl(.15, .19, .46, top, 16); torso.position.set(0, .78, -.2); torso.rotation.x = .28; girl.add(torso);
+    [-.21, .21].forEach(x => {
+      const arm = cyl(.045, .04, .46, skin, 8); arm.position.set(x, .78, .06); arm.rotation.x = 1.05; arm.rotation.z = x > 0 ? .18 : -.18; girl.add(arm);
+    });
+    const neck = cyl(.05, .05, .1, skin, 8); neck.position.set(0, 1.03, -.13); girl.add(neck);
+    const head = sph(.17, skin); head.position.set(0, 1.18, -.1); girl.add(head);
+    const hair = sph(.185, hairC); hair.position.set(0, 1.21, -.15); hair.scale.set(1, 1, .95); girl.add(hair);
+    const hairBack = box(.34, .36, .1, hairC); hairBack.position.set(0, 1.06, -.25); girl.add(hairBack);
+    const pony = sph(.09, hairC); pony.scale.set(.75, 1.7, .75); pony.position.set(0, 1.12, -.36); girl.add(pony);
+    [-.068, .068].forEach(x => {
+      const lens = mk(new T.TorusGeometry(.048, .009, 6, 16), '#d4a017', { metalness: .6, roughness: .3 }); lens.position.set(x, 1.19, .065); girl.add(lens);
+      const eye = sph(.018, '#2b2533'); eye.position.set(x, 1.19, .055); girl.add(eye);
+    });
+    const smile = mk(new T.TorusGeometry(.04, .008, 6, 12, PI), '#c2185b'); smile.rotation.z = PI; smile.position.set(0, 1.11, .065); girl.add(smile);
+    g.add(girl);
+
+    // Brillitos
+    const sparks = [];
+    for (let i = 0; i < 9; i++) {
+      const s = new T.Mesh(new T.OctahedronGeometry(.07, 0), new T.MeshBasicMaterial({ color: i % 3 ? '#ffffff' : '#ffe066', transparent: true, depthWrite: false }));
+      const a = i / 9 * PI * 2; s.userData = { a, r: .75 + (i % 3) * .12, y: .2 + (i % 4) * .18, ph: i * 1.7 };
+      g.add(s); sparks.push(s);
+    }
+    g.userData = { sparks, pony, girl };
+    return g;
+  }
+
+  return { RNG, canvasTex, jetski, island, foam, spot, pine, roundTree, palm, bush, rock, flowers, desk, frame, school, trophy, rocket, ziggurat, lighthouse, balloon, cloud, boat, penguin, router, mat, box, cyl, sph };
 })();

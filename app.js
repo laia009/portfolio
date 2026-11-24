@@ -50,6 +50,7 @@ function render() {
   }).join('');
   $$('.cert').forEach(b => b.onclick = () => { $('#lbImg').src = b.dataset.src; $('#lbImg').alt = $('#lbCap').textContent = b.dataset.cap; $('#lightbox').hidden = false; });
   if (current === 'about') animateBars();
+  if (nearId) $('#nearName').textContent = L['nav_' + nearId];
 }
 
 /* Enlace a la carpeta de Google Drive con todos los certificados (pega aquí el enlace) */
@@ -96,7 +97,7 @@ function openPanel(id) {
   scrim.classList.add('on');
   $$('#menu a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
   $('#menu').classList.remove('open');
-  hideIntro(); $('#hint').classList.add('gone');
+  hideIntro(); $('#hint').classList.add('gone'); $('#near').hidden = true;
   if (has3d) World.focus(id, innerWidth > 900 ? 3.6 : 0);
   if (id === 'about') animateBars();
   setTimeout(() => $('#close').focus({ preventScroll: true }), 300);
@@ -105,6 +106,7 @@ function closePanel() {
   current = null;
   panel.classList.remove('on'); panel.setAttribute('aria-hidden', 'true'); scrim.classList.remove('on');
   $$('#menu a').forEach(a => a.classList.remove('on'));
+  $('#near').hidden = !nearId;
   if (has3d) World.unfocus();
 }
 function goHome() { history.pushState('', document.title, location.pathname + location.search); route(); }
@@ -129,6 +131,10 @@ function showIntro() {
 $('#explore').onclick = () => { hideIntro(); $('#hint').classList.remove('gone'); };
 $('#intro').classList.add('gone'); $('#hint').classList.add('gone');
 
+/* ---------- moto de agua ---------- */
+let nearId = null;
+$('#near').onclick = () => { if (nearId) location.hash = nearId; };
+
 /* ---------- arranque ---------- */
 render();
 try {
@@ -137,6 +143,8 @@ try {
     canvas: $('#world'), markers,
     onSelect: id => { location.hash = id; },
     onInteract: () => { hideIntro(); $('#hint').classList.add('gone'); introShown = true; },
+    canDrive: () => !current,
+    onNear: id => { nearId = id; $('#near').hidden = !id; if (id) $('#nearName').textContent = I18N[lang]['nav_' + id]; },
     onProgress: p => { $('#loadbar').style.width = Math.round(p * 90) + '%'; }
   });
   has3d = true;
