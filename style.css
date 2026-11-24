@@ -160,6 +160,14 @@ mark.kw{background:linear-gradient(transparent 52%,rgba(255,95,162,.32) 52%);col
 .habit{display:flex;align-items:center;gap:14px;margin:30px 0 14px}
 .hnum{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;font:700 26px Fredoka;color:#fff;flex:none;box-shadow:0 8px 18px rgba(20,30,70,.15)}
 .h1 .hnum{background:var(--projects)}.h2 .hnum{background:var(--hhep)}.h3 .hnum{background:var(--certs)}
+.h4 .hnum{background:var(--resume)}.h5 .hnum{background:var(--about)}.h6 .hnum{background:var(--contact)}
+.ww{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.wday{background:var(--soft);border-radius:18px;padding:14px;text-align:center}
+.wday span{font-size:28px;display:block}.wday b{display:block;font:600 15px Fredoka;margin:4px 0}.wday p{font-size:14px;color:#47456a}
+.wres{display:flex;align-items:center;gap:12px;margin-top:10px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#e0f7f5,#e8f1ff)}
+.wres span{font-size:30px}.wres p{font-size:14.5px}
+.bubble{position:relative;margin:14px 0 6px;background:linear-gradient(135deg,#ffe4f1,#f3e8ff);border-radius:24px 24px 24px 6px;padding:20px 22px}
+.bubble p{font:600 17px/1.5 Fredoka;color:#1f1b3a}.bubble cite{display:block;margin-top:8px;font:600 13px Fredoka;color:#d63384;font-style:normal}
 .htag{font:600 12px Fredoka;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 .habit h3{font:700 21px Fredoka;line-height:1.2}
 .story{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
